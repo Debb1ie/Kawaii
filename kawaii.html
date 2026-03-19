@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✿ Kawaii World ✿</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #ff85c0;
+    --soft-pink: #ffd6ec;
+    --lavender: #c9b8ff;
+    --mint: #b8f0e0;
+    --peach: #ffc8a0;
+    --yellow: #ffe87a;
+    --sky: #b8e4ff;
+    --white: #fffafd;
+    --deep-pink: #ff4fa3;
+    --text: #5a3060;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--white);
+    color: var(--text);
+    overflow-x: hidden;
+    cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='26' font-size='26'>🌸</text></svg>") 10 10, auto;
+  }
+
+  /* ── FLOATING BACKGROUND STUFF ── */
+  .bg-floaties {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .floatie {
+    position: absolute;
+    font-size: 1.8rem;
+    animation: floatUp linear infinite;
+    opacity: 0.18;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.18; }
+    90%  { opacity: 0.18; }
+    100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* ── CONFETTI BURST ── */
+  .confetti-piece {
+    position: fixed;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: confettiFall 1.2s ease-out forwards;
+    z-index: 9999;
+  }
+  @keyframes confettiFall {
+    0%   { transform: translate(0,0) scale(1) rotate(0deg); opacity:1; }
+    100% { transform: translate(var(--tx), var(--ty)) scale(0) rotate(720deg); opacity:0; }
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(160deg, #fff0fa 0%, #ffe8f5 30%, #f0e8ff 60%, #e8f8ff 100%);
+  }
+
+  .hero-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(2.6rem, 7vw, 5.5rem);
+    line-height: 1.1;
+    background: linear-gradient(135deg, #ff4fa3, #c084fc, #38bdf8);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 8px rgba(255,100,200,0.25));
+    animation: titlePop 0.8s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  @keyframes titlePop {
+    from { transform: scale(0.5) rotate(-6deg); opacity: 0; }
+    to   { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  .hero-sub {
+    margin-top: 0.6rem;
+    font-size: clamp(1rem, 2.5vw, 1.35rem);
+    font-weight: 700;
+    color: #b06fc0;
+    animation: fadeSlide 0.8s 0.3s ease both;
+  }
+  @keyframes fadeSlide {
+    from { opacity:0; transform:translateY(20px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* ── BIG CHIBI CHARACTER ── */
+  .chibi-hero {
+    position: relative; margin: 2rem 0;
+    animation: chibiFloat 3s ease-in-out infinite;
+  }
+  @keyframes chibiFloat {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-18px); }
+  }
+
+  .chibi-svg { width: clamp(160px, 28vw, 260px); filter: drop-shadow(0 10px 30px rgba(255,100,200,0.3)); }
+
+  /* eyes blink */
+  .eye { animation: blink 4s ease-in-out infinite; transform-origin: center; }
+  @keyframes blink {
+    0%,45%,55%,100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.05); }
+  }
+
+  /* cheeks pulse */
+  .cheek { animation: cheekPulse 2s ease-in-out infinite; }
+  @keyframes cheekPulse {
+    0%,100% { opacity: 0.6; }
+    50%      { opacity: 1; }
+  }
+
+  /* star sparkles around chibi */
+  .sparkle-wrap { position: absolute; inset: -20px; }
+  .sparkle {
+    position: absolute; font-size: 1.2rem;
+    animation: sparkleSpin 2s ease-in-out infinite;
+  }
+  @keyframes sparkleSpin {
+    0%,100% { transform: scale(1) rotate(0deg); opacity:1; }
+    50%      { transform: scale(1.4) rotate(180deg); opacity:0.6; }
+  }
+
+  /* ── CTA BUTTON ── */
+  .cta-btn {
+    margin-top: 1.4rem;
+    padding: 0.85rem 2.6rem;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.25rem;
+    color: white;
+    background: linear-gradient(135deg, #ff4fa3, #c084fc);
+    border: none; border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 6px 24px rgba(255,80,170,0.4), 0 0 0 4px rgba(255,200,235,0.5);
+    transition: transform 0.15s, box-shadow 0.15s;
+    animation: fadeSlide 0.8s 0.5s ease both;
+  }
+  .cta-btn:hover { transform: scale(1.08) rotate(-1deg); box-shadow: 0 10px 32px rgba(255,80,170,0.55), 0 0 0 6px rgba(255,200,235,0.6); }
+  .cta-btn:active { transform: scale(0.96); }
+
+  /* ── SCROLL INDICATOR ── */
+  .scroll-hint { margin-top: 2.5rem; font-size: 0.9rem; color: #c090d0; animation: bounce 1.5s ease-in-out infinite; }
+  @keyframes bounce { 0%,100%{transform:translateY(0)}50%{transform:translateY(6px)} }
+
+  /* ── SECTION ── */
+  section { position: relative; z-index: 1; padding: 5rem 1.5rem; }
+
+  .section-title {
+    text-align: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    margin-bottom: 0.4rem;
+    background: linear-gradient(135deg, #ff4fa3, #c084fc);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .section-sub { text-align: center; color: #b06fc0; font-size: 1rem; font-weight: 600; margin-bottom: 3rem; }
+
+  /* ── FRIENDS GRID ── */
+  .friends-section { background: linear-gradient(180deg, #fff0fa, #f0eaff); }
+  .friends-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1.5rem;
+    max-width: 900px; margin: 0 auto;
+  }
+  .friend-card {
+    background: white;
+    border-radius: 24px;
+    padding: 1.8rem 1rem 1.4rem;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(200,100,200,0.12);
+    border: 2.5px solid transparent;
+    background-clip: padding-box;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative; overflow: hidden;
+  }
+  .friend-card::before {
+    content:''; position:absolute; inset:0;
+    border-radius:22px;
+    background: linear-gradient(135deg,#ffd6ec,#e8d8ff,#d8f0ff);
+    opacity:0; transition: opacity 0.3s;
+    z-index:0;
+  }
+  .friend-card:hover::before { opacity:1; }
+  .friend-card:hover { transform: translateY(-8px) scale(1.04); box-shadow: 0 12px 36px rgba(200,100,200,0.22); }
+  .friend-card > * { position: relative; z-index: 1; }
+
+  .friend-emoji { font-size: 3.5rem; display: block; margin-bottom: 0.5rem;
+    animation: wiggle 2.5s ease-in-out infinite; }
+  @keyframes wiggle {
+    0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)}
+  }
+  .friend-card:nth-child(2) .friend-emoji { animation-delay: 0.4s; }
+  .friend-card:nth-child(3) .friend-emoji { animation-delay: 0.8s; }
+  .friend-card:nth-child(4) .friend-emoji { animation-delay: 1.2s; }
+  .friend-card:nth-child(5) .friend-emoji { animation-delay: 1.6s; }
+  .friend-card:nth-child(6) .friend-emoji { animation-delay: 2s; }
+
+  .friend-name { font-family: 'Fredoka One', cursive; font-size: 1.15rem; color: var(--text); }
+  .friend-desc { font-size: 0.78rem; color: #b06fc0; margin-top: 0.3rem; font-weight: 600; }
+
+  /* ── MOOD PICKER ── */
+  .mood-section { background: linear-gradient(180deg, #f0eaff, #e8f8ff); }
+  .mood-bar {
+    display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;
+    max-width: 700px; margin: 0 auto 2rem;
+  }
+  .mood-btn {
+    padding: 0.7rem 1.5rem;
+    font-family: 'Fredoka One', cursive; font-size: 1.1rem;
+    border: 3px solid transparent; border-radius: 999px;
+    background: white; cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
+    box-shadow: 0 3px 12px rgba(180,100,200,0.15);
+  }
+  .mood-btn:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(180,100,200,0.25); }
+  .mood-btn.active {
+    background: linear-gradient(135deg, #ff4fa3, #c084fc);
+    color: white; border-color: transparent;
+    transform: scale(1.12);
+  }
+  .mood-display {
+    max-width: 480px; margin: 0 auto;
+    background: white; border-radius: 28px;
+    padding: 2rem; text-align: center;
+    box-shadow: 0 8px 32px rgba(180,100,200,0.15);
+    animation: popIn 0.4s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes popIn { from{transform:scale(0.7);opacity:0} to{transform:scale(1);opacity:1} }
+  .mood-big-emoji { font-size: 5rem; display: block; animation: moodBounce 0.6s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes moodBounce { from{transform:scale(0) rotate(-20deg)} to{transform:scale(1) rotate(0)} }
+  .mood-label { font-family:'Fredoka One',cursive; font-size: 1.6rem; color: var(--text); margin-top: 0.5rem; }
+  .mood-msg { font-size: 0.95rem; color: #b06fc0; font-weight: 600; margin-top: 0.3rem; }
+
+  /* ── BUBBLE MESSAGE WALL ── */
+  .bubbles-section { background: linear-gradient(180deg, #e8f8ff, #fff0fa); }
+  .bubble-form { max-width: 540px; margin: 0 auto 2.5rem; display: flex; gap: 0.75rem; }
+  .bubble-input {
+    flex: 1; padding: 0.8rem 1.2rem;
+    font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 700;
+    border: 2.5px solid #e8c0f0; border-radius: 999px; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: white; color: var(--text);
+  }
+  .bubble-input:focus { border-color: #c084fc; box-shadow: 0 0 0 4px rgba(192,132,252,0.2); }
+  .bubble-send {
+    padding: 0.8rem 1.5rem;
+    font-family: 'Fredoka One', cursive; font-size: 1rem; color: white;
+    background: linear-gradient(135deg, #ff4fa3, #c084fc);
+    border: none; border-radius: 999px; cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 14px rgba(255,80,170,0.3);
+  }
+  .bubble-send:hover { transform: scale(1.08); }
+  .bubble-send:active { transform: scale(0.95); }
+
+  .bubbles-wall {
+    max-width: 740px; margin: 0 auto;
+    display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;
+  }
+  .bubble-pill {
+    padding: 0.6rem 1.3rem;
+    border-radius: 999px; font-weight: 700; font-size: 0.95rem;
+    box-shadow: 0 3px 12px rgba(180,100,200,0.18);
+    animation: pilPop 0.4s cubic-bezier(.34,1.56,.64,1) both;
+    max-width: 260px; word-break: break-word; text-align: center;
+  }
+  @keyframes pilPop { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+
+  /* ── GALLERY / STICKERS ── */
+  .stickers-section { background: linear-gradient(180deg, #fff0fa, #fffafd); }
+  .stickers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 1rem;
+    max-width: 700px; margin: 0 auto;
+  }
+  .sticker {
+    aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem;
+    background: white; border-radius: 20px;
+    box-shadow: 0 4px 16px rgba(200,100,200,0.12);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    user-select: none;
+  }
+  .sticker:hover { transform: scale(1.18) rotate(5deg); box-shadow: 0 8px 28px rgba(200,100,200,0.25); }
+  .sticker:active { transform: scale(0.9); }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative; z-index: 1;
+    text-align: center; padding: 3rem 1rem;
+    background: linear-gradient(135deg, #ffd6ec, #e8d8ff);
+    font-family: 'Fredoka One', cursive; font-size: 1.1rem;
+    color: #b06fc0;
+  }
+  .footer-hearts { font-size: 1.5rem; animation: heartBeat 1s ease-in-out infinite; }
+  @keyframes heartBeat {
+    0%,100%{transform:scale(1)} 50%{transform:scale(1.25)}
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 1rem; left: 50%; transform: translateX(-50%);
+    z-index: 100;
+    background: rgba(255,255,255,0.82); backdrop-filter: blur(12px);
+    border: 2px solid rgba(255,180,230,0.5);
+    border-radius: 999px;
+    padding: 0.5rem 1.5rem;
+    display: flex; gap: 1.2rem; align-items: center;
+    box-shadow: 0 4px 24px rgba(200,100,200,0.15);
+  }
+  .nav-link {
+    font-family: 'Fredoka One', cursive; font-size: 0.95rem;
+    color: #b06fc0; text-decoration: none;
+    padding: 0.3rem 0.7rem; border-radius: 999px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .nav-link:hover { background: linear-gradient(135deg,#ff4fa3,#c084fc); color: white; }
+
+  /* responsive */
+  @media(max-width:480px){
+    nav { gap: 0.5rem; padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+    .nav-link { font-size: 0.8rem; padding: 0.2rem 0.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- Floating background emojis -->
+  <div class="bg-floaties">
+    <span v-for="f in floaties" :key="f.id" class="floatie"
+      :style="{ left: f.x+'%', animationDuration: f.dur+'s', animationDelay: f.delay+'s', fontSize: f.size+'rem' }">
+      {{ f.emoji }}
+    </span>
+  </div>
+
+  <!-- Confetti pieces -->
+  <div v-for="c in confettiPieces" :key="c.id" class="confetti-piece"
+    :style="{ left: c.x+'px', top: c.y+'px', background: c.color, '--tx': c.tx+'px', '--ty': c.ty+'px' }">
+  </div>
+
+  <!-- NAV -->
+  <nav>
+    <span style="font-size:1.2rem">🌸</span>
+    <a href="#friends" class="nav-link">Friends</a>
+    <a href="#mood" class="nav-link">Mood</a>
+    <a href="#bubbles" class="nav-link">Bubbles</a>
+    <a href="#stickers" class="nav-link">Stickers</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1 class="hero-title">✿ Kawaii World ✿</h1>
+    <p class="hero-sub">a super chootiepatootie place (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧</p>
+
+    <!-- Big Chibi SVG -->
+    <div class="chibi-hero">
+      <div class="sparkle-wrap">
+        <span class="sparkle" style="top:8%;left:5%;animation-delay:0s">⭐</span>
+        <span class="sparkle" style="top:15%;right:2%;animation-delay:0.4s">✨</span>
+        <span class="sparkle" style="bottom:20%;left:2%;animation-delay:0.8s">🌟</span>
+        <span class="sparkle" style="bottom:10%;right:8%;animation-delay:1.2s">💫</span>
+        <span class="sparkle" style="top:50%;left:-5%;animation-delay:1.6s">⭐</span>
+      </div>
+      <svg class="chibi-svg" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+        <!-- Body -->
+        <ellipse cx="100" cy="210" rx="48" ry="36" fill="#ffc8e8"/>
+        <!-- Dress frills -->
+        <ellipse cx="70" cy="230" rx="22" ry="12" fill="#ff85c0" opacity="0.7"/>
+        <ellipse cx="130" cy="230" rx="22" ry="12" fill="#ff85c0" opacity="0.7"/>
+        <ellipse cx="100" cy="238" rx="30" ry="13" fill="#ffd6ec"/>
+        <!-- Arms -->
+        <ellipse cx="52" cy="205" rx="13" ry="9" fill="#ffe0c8" transform="rotate(-20,52,205)"/>
+        <ellipse cx="148" cy="205" rx="13" ry="9" fill="#ffe0c8" transform="rotate(20,148,205)"/>
+        <!-- Tiny hands -->
+        <circle cx="42" cy="212" r="8" fill="#ffe8d5"/>
+        <circle cx="158" cy="212" r="8" fill="#ffe8d5"/>
+        <!-- Legs -->
+        <rect x="82" y="240" width="14" height="22" rx="7" fill="#ffc8e8"/>
+        <rect x="104" y="240" width="14" height="22" rx="7" fill="#ffc8e8"/>
+        <!-- Shoes -->
+        <ellipse cx="89" cy="262" rx="11" ry="6" fill="#c084fc"/>
+        <ellipse cx="111" cy="262" rx="11" ry="6" fill="#c084fc"/>
+
+        <!-- Big round head -->
+        <circle cx="100" cy="112" r="66" fill="#ffe8d5"/>
+        <!-- Hair back -->
+        <ellipse cx="100" cy="58" rx="58" ry="42" fill="#ff85c0"/>
+        <!-- Bunny ears -->
+        <ellipse cx="60" cy="30" rx="11" ry="26" fill="#ffc8e8" transform="rotate(-10,60,30)"/>
+        <ellipse cx="60" cy="30" rx="6" ry="18" fill="#ffaad4" transform="rotate(-10,60,30)"/>
+        <ellipse cx="140" cy="30" rx="11" ry="26" fill="#ffc8e8" transform="rotate(10,140,30)"/>
+        <ellipse cx="140" cy="30" rx="6" ry="18" fill="#ffaad4" transform="rotate(10,140,30)"/>
+        <!-- Hair front -->
+        <ellipse cx="100" cy="78" rx="62" ry="48" fill="#ff85c0"/>
+        <!-- Fringe bangs -->
+        <ellipse cx="68" cy="90" rx="18" ry="24" fill="#ff85c0"/>
+        <ellipse cx="132" cy="90" rx="18" ry="24" fill="#ff85c0"/>
+        <ellipse cx="100" cy="88" rx="16" ry="20" fill="#ff85c0"/>
+
+        <!-- Face base -->
+        <circle cx="100" cy="115" r="52" fill="#fff0e8"/>
+
+        <!-- Eyes whites -->
+        <ellipse cx="82" cy="110" rx="14" ry="16" fill="white"/>
+        <ellipse cx="118" cy="110" rx="14" ry="16" fill="white"/>
+        <!-- Pupils -->
+        <ellipse class="eye" cx="82" cy="112" rx="8" ry="10" fill="#5a3060"/>
+        <ellipse class="eye" cx="118" cy="112" rx="8" ry="10" fill="#5a3060"/>
+        <!-- Eye shine -->
+        <circle cx="78" cy="107" r="3" fill="white"/>
+        <circle cx="114" cy="107" r="3" fill="white"/>
+        <circle cx="85" cy="116" r="1.5" fill="white"/>
+        <circle cx="121" cy="116" r="1.5" fill="white"/>
+        <!-- Eye highlight stars -->
+        <polygon points="88,103 89,106 92,106 89.5,108 90.5,111 88,109 85.5,111 86.5,108 84,106 87,106" fill="white" opacity="0.7" transform="scale(0.6) translate(60,65)"/>
+
+        <!-- Eyelashes -->
+        <line x1="70" y1="96" x2="68" y2="90" stroke="#5a3060" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="78" y1="94" x2="77" y2="88" stroke="#5a3060" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="86" y1="94" x2="86" y2="88" stroke="#5a3060" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="110" y1="94" x2="110" y2="88" stroke="#5a3060" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="118" y1="94" x2="119" y2="88" stroke="#5a3060" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="126" y1="96" x2="128" y2="90" stroke="#5a3060" stroke-width="1.5" stroke-linecap="round"/>
+
+        <!-- Blush cheeks -->
+        <ellipse class="cheek" cx="62" cy="124" rx="16" ry="10" fill="#ff85c0" opacity="0.6"/>
+        <ellipse class="cheek" cx="138" cy="124" rx="16" ry="10" fill="#ff85c0" opacity="0.6"/>
+
+        <!-- Mouth -->
+        <path d="M90 132 Q100 142 110 132" stroke="#ff85c0" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+        <!-- Nose dot -->
+        <circle cx="100" cy="126" r="2" fill="#ffaad4"/>
+
+        <!-- Bow on head -->
+        <path d="M85,68 Q100,56 115,68 Q100,60 85,68Z" fill="#c084fc"/>
+        <circle cx="100" cy="64" r="6" fill="#a855f7"/>
+
+        <!-- Little hearts floating beside -->
+        <text x="158" y="88" font-size="14" opacity="0.7">💗</text>
+        <text x="22" y="96" font-size="12" opacity="0.6">✨</text>
+      </svg>
+    </div>
+
+    <button class="cta-btn" @click="burst">
+      🎉 Sprinkle Magic! 🎉
+    </button>
+    <p class="scroll-hint">✦ scroll down for more cuteness ✦ ↓</p>
+  </section>
+
+  <!-- FRIENDS -->
+  <section id="friends" class="friends-section">
+    <h2 class="section-title">✨ Meet the Friends ✨</h2>
+    <p class="section-sub">click them to say hi! (｡♥‿♥｡)</p>
+    <div class="friends-grid">
+      <div class="friend-card" v-for="f in friends" :key="f.name"
+           @click="greetFriend(f)">
+        <span class="friend-emoji">{{ f.emoji }}</span>
+        <div class="friend-name">{{ f.name }}</div>
+        <div class="friend-desc">{{ f.desc }}</div>
+      </div>
+    </div>
+    <transition name="fade">
+      <div v-if="greeting" style="text-align:center;margin-top:1.8rem;font-family:'Fredoka One',cursive;font-size:1.3rem;color:#c084fc;">
+        {{ greeting }}
+      </div>
+    </transition>
+  </section>
+
+  <!-- MOOD -->
+  <section id="mood" class="mood-section">
+    <h2 class="section-title">🌈 What's Your Mood? 🌈</h2>
+    <p class="section-sub">pick your vibe and we'll celebrate it! (っ◕‿◕)っ</p>
+    <div class="mood-bar">
+      <button v-for="m in moods" :key="m.label"
+        class="mood-btn"
+        :class="{ active: currentMood && currentMood.label === m.label }"
+        @click="setMood(m)">
+        {{ m.emoji }} {{ m.label }}
+      </button>
+    </div>
+    <transition name="fade">
+      <div class="mood-display" v-if="currentMood" :key="currentMood.label"
+           :style="{ background: currentMood.bg }">
+        <span class="mood-big-emoji">{{ currentMood.emoji }}</span>
+        <div class="mood-label">{{ currentMood.label }}!</div>
+        <div class="mood-msg">{{ currentMood.msg }}</div>
+      </div>
+    </transition>
+  </section>
+
+  <!-- BUBBLES -->
+  <section id="bubbles" class="bubbles-section">
+    <h2 class="section-title">💬 Bubble Wall 💬</h2>
+    <p class="section-sub">leave a cute message and watch it bubble! ✿</p>
+    <div class="bubble-form">
+      <input class="bubble-input" v-model="bubbleText"
+        placeholder="type something kawaii... ♡"
+        @keyup.enter="addBubble"
+        maxlength="50"/>
+      <button class="bubble-send" @click="addBubble">Send ✈</button>
+    </div>
+    <div class="bubbles-wall">
+      <div v-for="b in bubbles" :key="b.id" class="bubble-pill"
+           :style="{ background: b.bg, color: b.color }">
+        {{ b.text }}
+      </div>
+    </div>
+  </section>
+
+  <!-- STICKERS -->
+  <section id="stickers" class="stickers-section">
+    <h2 class="section-title">🎀 Sticker Box 🎀</h2>
+    <p class="section-sub">tap stickers to make them pop! (≧◡≦)</p>
+    <div class="stickers-grid">
+      <div v-for="s in stickers" :key="s" class="sticker"
+           @click="popSticker($event, s)">
+        {{ s }}
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-hearts">💖 💜 💙 💚 💛 🧡 💖</div>
+    <p style="margin-top:0.8rem">made with lots of love &amp; kawaii energy (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧</p>
+    <p style="font-size:0.8rem;margin-top:0.4rem;opacity:0.7">✿ kawaii world ✿ built with Vue.js ✿</p>
+  </footer>
+
+</div>
+
+<script>
+const { createApp, ref, onMounted } = Vue;
+
+createApp({
+  setup() {
+    // Floating BG emojis
+    const bgEmojis = ['🌸','🌼','✨','💫','⭐','🦋','🍡','🌙','🎀','💕','🍭','🌈','🐰','🍓','💝'];
+    const floaties = Array.from({length:18}, (_,i) => ({
+      id: i,
+      emoji: bgEmojis[i % bgEmojis.length],
+      x: Math.random()*100,
+      dur: 10 + Math.random()*14,
+      delay: -Math.random()*15,
+      size: 1.2 + Math.random()*1.4
+    }));
+
+    // Confetti
+    const confettiPieces = ref([]);
+    const colors = ['#ff4fa3','#c084fc','#38bdf8','#fbbf24','#34d399','#fb923c','#f472b6'];
+    let cId = 0;
+
+    function burst(e) {
+      const cx = e.clientX, cy = e.clientY;
+      const pieces = Array.from({length:28}, () => ({
+        id: cId++,
+        x: cx, y: cy,
+        color: colors[Math.floor(Math.random()*colors.length)],
+        tx: (Math.random()-0.5)*260,
+        ty: (Math.random()-1.2)*200
+      }));
+      confettiPieces.value = [...confettiPieces.value, ...pieces];
+      setTimeout(() => { confettiPieces.value = confettiPieces.value.filter(p => !pieces.find(pp=>pp.id===p.id)); }, 1300);
+    }
+
+    // Friends
+    const friends = [
+      {emoji:'🐰', name:'Mochi',   desc:'fluffy & soft ♡'},
+      {emoji:'🐱', name:'Yuki',    desc:'loves milk tea ✿'},
+      {emoji:'🐻', name:'Kumo',    desc:'cloud dreamer ☁'},
+      {emoji:'🦊', name:'Hoshi',   desc:'star collector ⭐'},
+      {emoji:'🐸', name:'Midori',  desc:'rain puddle fan 🌧'},
+      {emoji:'🐧', name:'Shiro',   desc:'snow & cuddles ❄'},
+    ];
+    const greeting = ref('');
+    let gTimer;
+    const greetings = ['Uwu hello!!','Hiiiiii bestie!!','*nuzzles you*','You found me! ✨','*waves tiny paws*','OMG it\'s you!! 💕'];
+    function greetFriend(f) {
+      clearTimeout(gTimer);
+      greeting.value = `${f.emoji} ${f.name} says: "${greetings[Math.floor(Math.random()*greetings.length)]}"`;
+      gTimer = setTimeout(() => greeting.value = '', 3000);
+    }
+
+    // Moods
+    const moods = [
+      { emoji:'😊', label:'Happy',     msg:'Yay!! Happiness is everything! 🌈', bg:'linear-gradient(135deg,#fff9c4,#ffe8a0)' },
+      { emoji:'🥰', label:'In Love',   msg:'Your heart is full of sparkles! 💖', bg:'linear-gradient(135deg,#ffd6ec,#ffb8d8)' },
+      { emoji:'😴', label:'Sleepy',    msg:'Nap time is valid anytime! 💤',      bg:'linear-gradient(135deg,#ddd8ff,#c8beff)' },
+      { emoji:'🤩', label:'Excited',   msg:'LETS GOOO energy is immaculate!! ✨', bg:'linear-gradient(135deg,#fff0b0,#ffd870)' },
+      { emoji:'🥺', label:'Sad',       msg:'You\'re valid! Here\'s a virtual hug 🫂', bg:'linear-gradient(135deg,#d8eeff,#b8d8ff)' },
+      { emoji:'😤', label:'Grumpy',    msg:'Your feelings matter! 🌩 vent away!', bg:'linear-gradient(135deg,#ffe4d4,#ffc8a8)' },
+    ];
+    const currentMood = ref(null);
+    function setMood(m) { currentMood.value = m; }
+
+    // Bubbles
+    const bubbleColors = [
+      {bg:'linear-gradient(135deg,#ffd6ec,#ffb8d8)',color:'#8b3070'},
+      {bg:'linear-gradient(135deg,#d8d0ff,#c0b0ff)',color:'#4a2090'},
+      {bg:'linear-gradient(135deg,#b8f0e0,#90e0cc)',color:'#1a6050'},
+      {bg:'linear-gradient(135deg,#b8e4ff,#90ccff)',color:'#1a4070'},
+      {bg:'linear-gradient(135deg,#ffe8b0,#ffd880)',color:'#705010'},
+      {bg:'linear-gradient(135deg,#ffc8b0,#ffb090)',color:'#803010'},
+    ];
+    const starterBubbles = [
+      'kawaii forever~ 🌸','*pops bubble*','uwu 🥺','hello fren!! 💕',
+      'this place is so cute!!','✨ magical ✨','🍡🍡🍡','i love it here!!'
+    ];
+    let bId = 100;
+    const bubbles = ref(starterBubbles.map(t => {
+      const c = bubbleColors[Math.floor(Math.random()*bubbleColors.length)];
+      return { id:bId++, text: t, ...c };
+    }));
+    const bubbleText = ref('');
+    function addBubble() {
+      const t = bubbleText.value.trim();
+      if (!t) return;
+      const c = bubbleColors[Math.floor(Math.random()*bubbleColors.length)];
+      bubbles.value.unshift({ id:bId++, text:t, ...c });
+      bubbleText.value = '';
+      if (bubbles.value.length > 20) bubbles.value.pop();
+    }
+
+    // Stickers
+    const stickers = ['🌸','🍡','🎀','🦋','🌈','💖','⭐','🍓','🐰','🌙','✨','🎐','🍭','🐱','💝','🌷','🍰','🎠','🐣','🌺','💫','🧁','🌻','🦄'];
+
+    function popSticker(e, s) {
+      // Mini confetti from sticker
+      const rect = e.currentTarget.getBoundingClientRect();
+      const cx = rect.left + rect.width/2;
+      const cy = rect.top + rect.height/2;
+      const pieces = Array.from({length:12}, () => ({
+        id: cId++,
+        x: cx, y: cy,
+        color: colors[Math.floor(Math.random()*colors.length)],
+        tx: (Math.random()-0.5)*150,
+        ty: (Math.random()-0.8)*150
+      }));
+      confettiPieces.value = [...confettiPieces.value, ...pieces];
+      setTimeout(() => { confettiPieces.value = confettiPieces.value.filter(p => !pieces.find(pp=>pp.id===p.id)); }, 1300);
+    }
+
+    return { floaties, confettiPieces, burst, friends, greeting, greetFriend, moods, currentMood, setMood, bubbles, bubbleText, addBubble, stickers, popSticker };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
